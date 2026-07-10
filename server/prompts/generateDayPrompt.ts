@@ -22,7 +22,15 @@ const EXAMPLE_JSON = `{
           "locationId": "carpentry_shop",
           "action": "借口给父亲送东西，在木匠铺门口停留片刻",
           "withNpcIds": ["aliang", "chenbo"],
-          "thought": "阿亮又在走神了……我不敢多留，怕陈伯看出来"
+          "thought": "阿亮又在走神了……我不敢多留，怕陈伯看出来",
+          "importance": 8,
+          "conversation": {
+            "speakers": ["xiaoman", "aliang"],
+            "lines": [
+              { "npcId": "xiaoman", "text": "陈伯，我来送点东西。" },
+              { "npcId": "aliang", "text": "小满？你怎么来了……" }
+            ]
+          }
         }
       ]
     },
@@ -84,8 +92,9 @@ export function buildGenerateDayPrompt(
 4. 每个 DayPlan 包含：npcId（string）、day（number，值为 ${day}）、schedule（ScheduleEvent[]）
 5. 每条 ScheduleEvent 必填：time（"HH:mm" 24小时制）、locationId（string）、action（string）
 6. 鼓励填写 thought（内心独白）和 withNpcIds（互动对象 id 数组）
-7. locationId 只能使用提供的地点 ID，不得编造
-8. 每人 schedule 6-10 条，时间范围 06:00-22:00，按时间升序排列
+7. 对关键互动事件填写 importance（1-10 整数，>=7 表示重要）；有 withNpcIds 时可内嵌 conversation（4-6 轮短对话）
+8. locationId 只能使用提供的地点 ID，不得编造
+9. 每人 schedule 6-10 条，时间范围 06:00-22:00，按时间升序排列
 
 叙事要求（关系驱动，禁止六条平行流水账）：
 - 至少 3 组跨 NPC 同场互动：同一地点、相近时间，withNpcIds 互相引用

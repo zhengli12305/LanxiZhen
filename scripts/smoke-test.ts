@@ -47,7 +47,7 @@ function testStripJsonMarkdown(): void {
 function testPromptContainsRelationshipConstraints(): void {
   const { system, user } = buildGenerateDayPrompt(1, npcProfiles, locations)
   const combined = `${system}\n${user}`
-  const requiredSnippets = ['secret_crush', '小满', '阿亮', 'dayPlans', 'withNpcIds', '陈伯']
+  const requiredSnippets = ['secret_crush', '小满', '阿亮', 'dayPlans', 'withNpcIds', '陈伯', 'importance', 'conversation']
   for (const snippet of requiredSnippets) {
     assert(combined.includes(snippet), `prompt 应包含「${snippet}」`)
   }
@@ -67,6 +67,12 @@ function testMockContentHasRelationshipTension(): void {
     plan.schedule.filter(event => event.withNpcIds && event.withNpcIds.length > 0),
   )
   assert(crossNpcEvents.length >= 3, 'mock 数据应至少 3 次跨 NPC 同场')
+
+  const importantEvent = mockDayPlans.flatMap(p => p.schedule).find(e => e.importance && e.importance >= 7)
+  assert(Boolean(importantEvent), 'mock 数据应包含 importance >= 7 的事件')
+
+  const withConversation = mockDayPlans.flatMap(p => p.schedule).find(e => e.conversation?.lines?.length)
+  assert(Boolean(withConversation), 'mock 数据应包含 conversation 对话')
   console.log('✓ mock 日程内容符合关系张力验收标准')
 }
 

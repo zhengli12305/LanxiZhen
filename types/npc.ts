@@ -40,6 +40,16 @@ export interface NpcProfile {
   workLocationId: string
 }
 
+export interface ConversationLine {
+  npcId: string
+  text: string
+}
+
+export interface ScheduleConversation {
+  speakers: string[]
+  lines: ConversationLine[]
+}
+
 /**
  * 当天日程里的单个事件，由AI生成。
  * thought 是这个NPC此刻的内心独白，是详情面板里最有可读性的部分。
@@ -50,6 +60,8 @@ export interface ScheduleEvent {
   action: string          // 简短动作描述，例如"在木匠铺打磨桌腿"
   withNpcIds?: string[]  // 如果这个事件涉及和其他NPC互动
   thought?: string        // 内心独白
+  importance?: number     // 1-10，详情面板高亮关键事件
+  conversation?: ScheduleConversation // 同地点短对话（批量生成时内嵌）
 }
 
 /**

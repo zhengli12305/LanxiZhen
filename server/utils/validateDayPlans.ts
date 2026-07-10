@@ -1,4 +1,4 @@
-import type { DayPlan, ScheduleEvent } from '~~/types/npc'
+import type { DayPlan, ScheduleConversation, ScheduleEvent } from '~~/types/npc'
 
 const TIME_PATTERN = /^\d{2}:\d{2}$/
 
@@ -24,6 +24,46 @@ function assertNumber(value: unknown, path: string): number {
     throw new Error(`${path} 必须是数字`)
   }
   return value
+}
+
+function parseConversation(
+  raw: unknown,
+  path: string,
+  validNpcIds: ReadonlySet<string>,
+): ScheduleConversation {
+  if (!isRecord(raw)) {
+    throw new Error(`${path} 必须是对象`)
+  }
+
+  if (!Array.isArray(raw.speakers)) {
+    throw new Error(`${path}.speakers 必须是数组`)
+  }
+
+  const speakers = raw.speakers.map((id, index) => {
+    const npcId = assertString(id, `${path}.speakers[${index}]`)
+    if (!validNpcIds.has(npcId)) {
+      throw new Error(`${path}.speakers[${index}] 包含未知 npcId: ${npcId}`)
+    }
+    return npcId
+  })
+
+  if (!Array.isArray(raw.lines)) {
+    throw new Error(`${path}.lines 必须是数组`)
+  }
+
+  const lines = raw.lines.map((line, index) => {
+    if (!isRecord(line)) {
+      throw new Error(`${path}.lines[${index}] 必须是对象`)
+    }
+    const npcId = assertString(line.npcId, `${path}.lines[${index}].npcId`)
+    if (!validNpcIds.has(npcId)) {
+      throw new Error(`${path}.lines[${index}].npcId 未知: ${npcId}`)
+    }
+    const text = assertString(line.text, `${path}.lines[${index}].text`)
+    return { npcId, text }
+  })
+
+  return { speakers, lines }
 }
 
 function parseScheduleEvent(raw: unknown, path: string, validNpcIds: ReadonlySet<string>): ScheduleEvent {
@@ -56,6 +96,18 @@ function parseScheduleEvent(raw: unknown, path: string, validNpcIds: ReadonlySet
       }
       return npcId
     })
+  }
+
+  if (raw.importance !== undefined) {
+    const importance = assertNumber(raw.importance, `${path}.importance`)
+    if (importance < 1 || importance > 10 || !Number.isInteger(importance)) {
+      throw new Error(`${path}.importance 必须是 1-10 的整数`)
+    }
+    event.importance = importance
+  }
+
+  if (raw.conversation !== undefined) {
+    event.conversation = parseConversation(raw.conversation, `${path}.conversation`, validNpcIds)
   }
 
   return event

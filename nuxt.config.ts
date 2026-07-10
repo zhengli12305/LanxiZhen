@@ -7,16 +7,13 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url))
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', '@pinia/nuxt'],
   typescript: {
     strict: true,
   },
   runtimeConfig: {
     deepseekApiKey: process.env.DEEPSEEK_API_KEY || '',
     deepseekModel: process.env.DEEPSEEK_MODEL || 'deepseek-v4-flash',
-  },
-  routeRules: {
-    '/': { redirect: '/test-generate' },
   },
   vite: {
     server: {

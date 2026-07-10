@@ -13,6 +13,7 @@
           :key="npc.id"
           :npc="npc"
           :size="size"
+          :face-index="index"
           :transform="faceTransforms[index]"
         />
       </div>
@@ -21,8 +22,12 @@
     <Transition name="fade">
       <div v-if="frontNpc" class="front-npc-callout">
         <p class="callout-name">{{ frontNpc.name }} · {{ frontNpc.role }}</p>
-        <button class="enter-button" @click="handleEnter">
-          进入{{ frontNpc.name }}的一天
+        <button
+          class="enter-button"
+          :disabled="disabled"
+          @click="handleEnter"
+        >
+          {{ disabled ? '日程加载中…' : `进入${frontNpc.name}的一天` }}
         </button>
       </div>
     </Transition>
@@ -37,10 +42,12 @@ import DiceFace from './DiceFace.vue'
 interface Props {
   npcs: NpcProfile[] // 必须正好6个，顺序对应下面FACE_KEYS的顺序
   size?: number
+  disabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 200,
+  disabled: false,
 })
 
 const emit = defineEmits<{
@@ -86,7 +93,7 @@ function onPointerDown(e: PointerEvent) {
   isDragging.value = true
   lastPointer.x = e.clientX
   lastPointer.y = e.clientY
-  ;(e.target as Element).setPointerCapture?.(e.pointerId)
+  ;(e.currentTarget as Element).setPointerCapture?.(e.pointerId)
 }
 
 function onPointerMove(e: PointerEvent) {
@@ -179,9 +186,10 @@ const cubeStyle = computed(() => ({
 }))
 
 function handleEnter() {
-  if (frontNpc.value) {
-    emit('select', frontNpc.value.id)
+  if (props.disabled || !frontNpc.value) {
+    return
   }
+  emit('select', frontNpc.value.id)
 }
 </script>
 
@@ -212,6 +220,7 @@ function handleEnter() {
   top: 50%;
   left: 50%;
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 .front-npc-callout {
@@ -237,8 +246,13 @@ function handleEnter() {
   transition: background 0.2s;
 }
 
-.enter-button:hover {
+.enter-button:hover:not(:disabled) {
   background: rgba(232, 163, 61, 0.15);
+}
+
+.enter-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .fade-enter-active,

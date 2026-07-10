@@ -9,7 +9,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'chenbo',
     name: '陈伯',
     role: '老木匠',
-    avatar: '/avatars/chenbo.png',
+    avatar: '/avatars/chenbo.svg',
     personality: '沉默寡言，做事一丝不苟，几十年只守着这一间木匠铺，不太擅长表达情感',
     secretGoal: '视力这两年明显在退化，怕被人发现露了怯就没法继续接活，一直瞒着所有人硬撑',
     relationships: [
@@ -26,7 +26,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'aliang',
     name: '阿亮',
     role: '木匠学徒',
-    avatar: '/avatars/aliang.png',
+    avatar: '/avatars/aliang.svg',
     personality: '活泼、爱幻想，手上做着木工，心里想着别的事，藏不住情绪，容易分心',
     secretGoal: '其实一点都不想学木工，偷偷在画画，梦想是有一天离开小镇去外面当画师',
     relationships: [
@@ -43,7 +43,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'wenjie',
     name: '温姐',
     role: '面包店老板娘',
-    avatar: '/avatars/wenjie.png',
+    avatar: '/avatars/wenjie.svg',
     personality: '热心、爱说话，镇上大小消息几乎都会经过她的面包店，对谁都笑脸相迎',
     secretGoal: '丈夫去世后一个人撑着店，嘴上说一个人挺好、不缺人陪，其实晚上关店后常常觉得很孤单',
     relationships: [
@@ -60,7 +60,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'xiaoman',
     name: '小满',
     role: '镇长的女儿',
-    avatar: '/avatars/xiaoman.png',
+    avatar: '/avatars/xiaoman.svg',
     personality: '叛逆、直率，看不惯镇上一些约定俗成的规矩，说话经常不顾场合',
     secretGoal: '偷偷喜欢阿亮，但心里清楚父亲绝不会同意她跟一个学徒有什么牵扯，所以从没表露过',
     relationships: [
@@ -77,7 +77,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'laozhou',
     name: '老周',
     role: '酒馆老板',
-    avatar: '/avatars/laozhou.png',
+    avatar: '/avatars/laozhou.svg',
     personality: '圆滑世故，见多识广，很少表态站队,更喜欢当一个不掺和的旁观者',
     secretGoal: '镇上大部分人的秘密他多少都听过风声，包括陈伯视力的事，但他习惯把话都烂在肚子里',
     relationships: [
@@ -99,7 +99,7 @@ export const npcProfiles: NpcProfile[] = [
     id: 'shitou',
     name: '石头',
     role: '守夜猎人',
-    avatar: '/avatars/shitou.png',
+    avatar: '/avatars/shitou.svg',
     personality: '孤僻、话少，白天很少出现在人群里，习惯独来独往，观察力很强',
     secretGoal: '有一次巡夜时撞见陈伯在暗处眯着眼摸黑辨认东西,自此知道了他的秘密,但一直没说破',
     relationships: [

@@ -22,3 +22,16 @@ logs
 .env
 .env.*
 !.env.example
+
+# Local AI cache
+.data/
+
+# Duplicate Kenney source packs (runtime uses public/assets/kenney/)
+Kenny/
+kenney_tiny-farm-extract/
+
+# Editor / accidental backup copies
+*_1.ts
+*_1.vue
+*_1.md
+README_1.md

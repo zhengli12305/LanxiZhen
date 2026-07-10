@@ -129,13 +129,7 @@ export default defineEventHandler(async (event) => {
   const refresh = query.refresh === '1' || query.refresh === 'true'
 
   if (!config.deepseekApiKey) {
-    if (query.mock === '1') {
-      return mockDayPlans
-    }
-    throw createError({
-      statusCode: 500,
-      statusMessage: '未配置 DEEPSEEK_API_KEY，请复制 .env.example 为 .env 并填入密钥',
-    })
+    return mockDayPlans
   }
 
   if (!refresh) {

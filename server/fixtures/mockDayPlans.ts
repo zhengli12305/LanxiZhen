@@ -6,7 +6,7 @@ export const mockDayPlans: DayPlan[] = [
     day: 1,
     schedule: [
       { time: '06:30', locationId: 'home_chenbo', action: '摸黑起床，在窗边辨认工具轮廓', thought: '又一夜没睡好，眼睛越来越不争气' },
-      { time: '08:00', locationId: 'carpentry_shop', action: '检查阿亮昨日留下的活计', withNpcIds: ['aliang'], thought: '粗活还能瞒过去，细活得想办法推给他做' },
+      { time: '08:00', locationId: 'carpentry_shop', action: '检查阿亮昨日留下的活计', withNpcIds: ['aliang'], thought: '粗活还能瞒过去，细活得想办法推给他做', importance: 6 },
       { time: '12:00', locationId: 'bakery', action: '买两个馒头当午饭', withNpcIds: ['wenjie'], thought: '温姐话多，少停留' },
       { time: '17:30', locationId: 'tavern', action: '喝一小碗汤再回家', withNpcIds: ['laozhou'], thought: '老周眼神毒，别让他看出我在躲光线' },
     ],
@@ -36,7 +36,7 @@ export const mockDayPlans: DayPlan[] = [
     day: 1,
     schedule: [
       { time: '08:15', locationId: 'home_xiaoman', action: '在院子里假装看书，其实在等阿亮出门', thought: '他今天会不会去木匠铺？' },
-      { time: '09:30', locationId: 'carpentry_shop', action: '借口给父亲送东西，在铺门口停留', withNpcIds: ['aliang', 'chenbo'], thought: '阿亮又在走神了……我不敢多留，怕陈伯看出来' },
+      { time: '09:30', locationId: 'carpentry_shop', action: '借口给父亲送东西，在铺门口停留', withNpcIds: ['aliang', 'chenbo'], thought: '阿亮又在走神了……我不敢多留，怕陈伯看出来', importance: 8, conversation: { speakers: ['xiaoman', 'aliang', 'chenbo'], lines: [{ npcId: 'xiaoman', text: '陈伯，我来送点东西。' }, { npcId: 'chenbo', text: '放那儿就行，别挡光。' }, { npcId: 'aliang', text: '……嗯，小满你也来了。' }] } },
       { time: '11:00', locationId: 'bakery', action: '买面包时向温姐打听阿亮的事', withNpcIds: ['wenjie'], thought: '不能问得太明显' },
       { time: '15:00', locationId: 'well', action: '打水时故意绕远路经过集市', thought: '也许能再"偶遇"他一次' },
     ],
@@ -46,7 +46,7 @@ export const mockDayPlans: DayPlan[] = [
     day: 1,
     schedule: [
       { time: '09:00', locationId: 'tavern', action: '擦拭桌椅，听早来的客人闲聊', thought: '陈伯的事，知道了也不能说透' },
-      { time: '12:30', locationId: 'carpentry_shop', action: '送酒菜给陈伯当午饭', withNpcIds: ['chenbo', 'aliang'], thought: '把菜单放亮处，看他能不能看清' },
+      { time: '12:30', locationId: 'carpentry_shop', action: '送酒菜给陈伯当午饭', withNpcIds: ['chenbo', 'aliang'], thought: '把菜单放亮处，看他能不能看清', importance: 7, conversation: { speakers: ['laozhou', 'chenbo'], lines: [{ npcId: 'laozhou', text: '陈伯，今天的菜放窗边了。' }, { npcId: 'chenbo', text: '嗯，闻着挺香。' }] } },
       { time: '16:00', locationId: 'tavern', action: '接收温姐送来的面包', withNpcIds: ['wenjie'], thought: '她今天又打听小满的事了' },
       { time: '19:00', locationId: 'tavern', action: '和石头简短交谈', withNpcIds: ['shitou'], thought: '这小子什么都知道，但从不点破' },
     ],

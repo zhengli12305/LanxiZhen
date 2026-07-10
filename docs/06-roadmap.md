@@ -1,11 +1,11 @@
 # 开发排期参考（一个月）
 
-| 周次 | 目标 | 具体任务 |
-|---|---|---|
-| 第1周 | 打通AI生成链路 | Nuxt4项目脚手架、TS类型定义、`server/api/generate-day.post.ts` 调用Claude API生成JSON、prompt调试到输出稳定 |
-| 第2周 | 状态管理与基础渲染 | 三个Pinia store搭建、`useNpcCurrentState`等composable、地图组件先用静态坐标把NPC头像摆上去、时间轴滑块能跑起来（先不管动画细节） |
-| 第3周 | 骰子入场 + 交互打磨 | 骰子组件已完成，重点是打通预取时机、过渡动画、`NpcDetailPanel`展示当天日程和内心独白、NPC移动的CSS transition动画 |
-| 第4周 | 收尾与包装 | 视觉细节打磨（配色、字体、空状态）、Git提交历史整理、用Claude Code完整走一次功能开发并记录AI协作过程、简历项目描述和演示视频/截图准备 |
+| 周次 | 目标 | 具体任务 | 状态 |
+|---|---|---|---|
+| 第1周 | 打通AI生成链路 | Nuxt4项目脚手架、TS类型定义、`server/api/generate-day.post.ts` 调用Claude API生成JSON、prompt调试到输出稳定 | ✅ |
+| 第2周 | 状态管理与基础渲染 | 三个Pinia store搭建、`useNpcCurrentState`等composable、地图组件先用静态坐标把NPC头像摆上去、时间轴滑块能跑起来（先不管动画细节） | ✅ |
+| 第3周 | 骰子入场 + 交互打磨 | 骰子组件已完成，重点是打通预取时机、过渡动画、`NpcDetailPanel`展示当天日程和内心独白、NPC移动的CSS transition动画 | ✅ |
+| 第4周 | 收尾与包装 | 视觉细节打磨（配色、字体、空状态）、Git提交历史整理、用Claude Code完整走一次功能开发并记录AI协作过程、简历项目描述和演示视频/截图准备 | 进行中 |
 
 第3周是风险最高的一周（过渡动画和状态同步容易出细节问题），如果那周进度紧张，优先保证核心体验能跑通，视觉细节可以放到第4周补。
 
