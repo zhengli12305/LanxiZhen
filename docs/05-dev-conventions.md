@@ -29,7 +29,7 @@ style: 调整详情面板间距
 ## 代码风格
 
 - ESLint + Prettier 从项目一开始就配好，用Nuxt4脚手架默认集成的官方推荐配置，不要写到一半才加规则再全量格式化
-- 组件命名：PascalCase文件名（`IntroDice.vue`），多单词强制（避免和原生HTML标签冲突）
+- 组件命名：PascalCase文件名（`IntroCoverScene.vue`），多单词强制（避免和原生HTML标签冲突）
 - Composable命名：统一 `use` 前缀 + 驼峰（`useNpcCurrentState`），文件名和函数名保持一致
 - Props/Emits 必须用 `defineProps<Props>()` / `defineEmits<{...}>()` 这种编译时类型声明，不要用运行时声明（`defineProps({...})`）
 - ESLint规则打开 `@typescript-eslint/no-explicit-any`，禁止 `any`。AI生成的JSON解析出来的数据尤其容易偷懒写any，这里要卡住

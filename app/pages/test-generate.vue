@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 import { npcProfiles } from '~~/data/npcProfiles'
-import type { DayPlan } from '~~/types/npc'
+import type { DayPlan, GenerateDayDebugResponse, GenerateDayMeta } from '~~/types/npc'
+
+definePageMeta({
+  middleware: 'dev-only',
+})
 
 const status = ref<'idle' | 'pending' | 'done' | 'error'>('idle')
 const errorMessage = ref('')
+const meta = ref<GenerateDayMeta | null>(null)
 
 function formatError(error: unknown): string {
   if (error instanceof FetchError) {
@@ -42,14 +47,19 @@ function logDayPlans(dayPlans: DayPlan[]) {
 async function handleGenerate(refresh = false) {
   status.value = 'pending'
   errorMessage.value = ''
+  meta.value = null
 
   try {
-    const dayPlans = await $fetch<DayPlan[]>('/api/generate-day', {
+    const data = await $fetch<GenerateDayDebugResponse>('/api/generate-day', {
       method: 'POST',
       body: { day: 1 },
-      query: refresh ? { refresh: '1' } : undefined,
+      query: {
+        debug: '1',
+        ...(refresh ? { refresh: '1' } : {}),
+      },
     })
-    logDayPlans(dayPlans)
+    logDayPlans(data.dayPlans)
+    meta.value = data.meta
     status.value = 'done'
   }
   catch (error) {
@@ -62,14 +72,15 @@ async function handleGenerate(refresh = false) {
 </script>
 
 <template>
-  <div style="padding: 2rem; font-family: sans-serif;">
+  <div class="test-generate">
     <h1>AI 日程生成测试</h1>
     <p>打开浏览器控制台查看 console.log 输出。</p>
     <p>状态：{{ status }}</p>
-    <p v-if="errorMessage" style="color: crimson;">
+    <p v-if="errorMessage" class="test-generate__error">
       {{ errorMessage }}
     </p>
-    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+
+    <div class="test-generate__actions">
       <button type="button" :disabled="status === 'pending'" @click="handleGenerate(false)">
         生成第 1 天
       </button>
@@ -77,5 +88,63 @@ async function handleGenerate(refresh = false) {
         强制刷新（跳过缓存）
       </button>
     </div>
+
+    <section v-if="meta" class="test-generate__meta">
+      <h2>生成元数据</h2>
+      <dl>
+        <dt>数据来源</dt>
+        <dd>{{ meta.source }}</dd>
+        <dt>Prompt 字符数</dt>
+        <dd>{{ meta.promptChars }}</dd>
+        <dt>耗时 (ms)</dt>
+        <dd>{{ meta.durationMs }}</dd>
+        <dt>尝试次数</dt>
+        <dd>{{ meta.attempts }}</dd>
+      </dl>
+    </section>
   </div>
 </template>
+
+<style scoped>
+.test-generate {
+  padding: 2rem;
+  font-family: sans-serif;
+  color: var(--lxz-ink);
+  background: var(--lxz-paper);
+  min-height: 100vh;
+}
+
+.test-generate__error {
+  color: crimson;
+}
+
+.test-generate__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.test-generate__meta {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--lxz-border);
+  border-radius: 8px;
+  background: #fff;
+  max-width: 360px;
+}
+
+.test-generate__meta dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+.test-generate__meta dt {
+  font-weight: 600;
+}
+
+.test-generate__meta dd {
+  margin: 0;
+}
+</style>

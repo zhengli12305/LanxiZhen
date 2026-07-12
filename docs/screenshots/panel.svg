@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#7ab85e"/>
+  <rect x="420" y="60" width="340" height="380" rx="6" fill="#fff8e6" stroke="#5a4a3a" stroke-width="2"/>
+  <text x="590" y="110" text-anchor="middle" fill="#2b2118" font-family="serif" font-size="20" font-weight="700">�</text>
+  <text x="590" y="150" text-anchor="middle" fill="#5a4a3a" font-size="12">���} � :��</text>
+  <rect x="450" y="180" width="280" height="60" rx="4" fill="rgba(232,163,61,0.2)" stroke="#e8a33d"/>
+  <text x="590" y="460" text-anchor="middle" fill="rgba(43,33,24,0.6)" font-size="12">�b:�E*�: ��bخSM�;</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#5a9a4a"/>
+  <rect x="80" y="80" width="640" height="340" rx="6" fill="#4a7a3a" stroke="#5a4a3a" stroke-width="3"/>
+  <text x="400" y="60" text-anchor="middle" fill="#2b2118" font-family="serif" font-size="24" font-weight="700">�eG � , 1 )</text>
+  <text x="400" y="280" text-anchor="middle" fill="#fff8e6" font-size="14">Village Map + NPC Sprites</text>
+  <text x="400" y="460" text-anchor="middle" fill="rgba(43,33,24,0.6)" font-size="12">�b:�E*�: Q�0���t</text>
+</svg>

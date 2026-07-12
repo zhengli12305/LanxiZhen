@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia'
 import { npcProfiles } from '~~/data/npcProfiles'
 import { sortScheduleEvents } from '~~/utils/time'
-import type { DayPlan, NpcProfile, ScheduleEvent } from '~~/types/npc'
+import type { DayPlan, GenerateDayDebugResponse, NpcProfile, ScheduleEvent } from '~~/types/npc'
+
+function normalizeDayPlansResponse(data: DayPlan[] | GenerateDayDebugResponse): DayPlan[] {
+  if (Array.isArray(data)) {
+    return data
+  }
+  return data.dayPlans
+}
 
 export const useNpcStore = defineStore('npc', {
   state: () => ({
@@ -36,12 +43,12 @@ export const useNpcStore = defineStore('npc', {
       this.error = null
 
       try {
-        const plans = await $fetch<DayPlan[]>('/api/generate-day', {
+        const data = await $fetch<DayPlan[] | GenerateDayDebugResponse>('/api/generate-day', {
           method: 'POST',
           body: { day },
           query: options?.refresh ? { refresh: '1' } : undefined,
         })
-        this.setDayPlans(plans)
+        this.setDayPlans(normalizeDayPlansResponse(data))
       }
       catch (error) {
         this.error = error instanceof Error ? error.message : String(error)

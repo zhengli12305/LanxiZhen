@@ -24,6 +24,10 @@
 import KenneyTile from '~~/components/village/KenneyTile.vue'
 import { getTileLabel, KENNEY_TILE_COUNT } from '~~/data/kenneyTileRegistry'
 
+definePageMeta({
+  middleware: 'dev-only',
+})
+
 const tileCount = KENNEY_TILE_COUNT
 const tileIndices = Array.from({ length: tileCount }, (_, i) => i)
 </script>

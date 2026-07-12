@@ -29,4 +29,4 @@
 ## 类型使用时的强约束
 
 - 禁止在解析AI返回的JSON时用 `any`，必须校验/断言成 `DayPlan[]`
-- `NpcProfile[]` 传给 `IntroDice` 组件时，数组顺序必须严格对应 `FACE_KEYS = ['front', 'right', 'back', 'left', 'top', 'bottom']` 这个顺序（见 `components/intro/IntroDice.vue` 里的实现），传错顺序会导致骰子面和角色对不上
+- `NpcProfile[]` 传给封面骰子时，数组顺序必须严格对应六面映射（见 `lib/intro-three/dice.ts` 的 `NPC_INDEX_TO_MATERIAL`）：`front, right, back, left, top, bottom` 分别对应陈伯、阿亮、温姐、小满、老周、石头，传错顺序会导致骰子面和角色对不上

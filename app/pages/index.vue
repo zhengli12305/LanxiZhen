@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IntroDice from '~~/components/intro/IntroDice.vue'
+import IntroCoverScene from '~~/components/intro/IntroCoverScene.vue'
 import LoadingScreen from '~~/components/village/LoadingScreen.vue'
 import VillageScene from '~~/components/village/VillageScene.vue'
 import { resetNpcMovementState } from '~~/app/composables/useNpcCurrentState'
@@ -100,12 +100,14 @@ watch(
         <p v-if="npcStore.error" class="entry-root__error">
           日程加载失败：{{ npcStore.error }}
         </p>
-        <IntroDice
-          :key="introSessionKey"
-          :npcs="npcStore.profiles"
-          :disabled="npcStore.isLoading"
-          @select="onSelect"
-        />
+        <ClientOnly>
+          <IntroCoverScene
+            :key="introSessionKey"
+            :npcs="npcStore.profiles"
+            :disabled="npcStore.isLoading"
+            @select="onSelect"
+          />
+        </ClientOnly>
       </div>
 
       <LoadingScreen
@@ -128,11 +130,16 @@ watch(
 <style scoped>
 .entry-root {
   min-height: 100vh;
-  background: radial-gradient(ellipse at 50% 30%, #3d5a3a 0%, #1a2418 70%);
+  background: #050f14;
 }
 
 .entry-root__error {
-  margin: 0 0 1rem;
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  margin: 0;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   color: #ffb4b4;
@@ -143,11 +150,8 @@ watch(
 }
 
 .entry-root__dice {
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(ellipse at 50% 30%, #3d5a3a 0%, #1a2418 70%);
 }
 
 .scene-fade-enter-active,

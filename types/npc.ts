@@ -95,3 +95,17 @@ export interface LocationDefinition {
   x: number // 地图坐标，单位:像素，基于设计稿的参考尺寸
   y: number
 }
+
+export type GenerateDaySource = 'mock' | 'cache' | 'api'
+
+export interface GenerateDayMeta {
+  promptChars: number
+  durationMs: number
+  attempts: number
+  source: GenerateDaySource
+}
+
+export interface GenerateDayDebugResponse {
+  dayPlans: DayPlan[]
+  meta: GenerateDayMeta
+}

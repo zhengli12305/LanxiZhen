@@ -5,7 +5,7 @@ import { locations } from '~~/data/locations'
 import { mockDayPlans } from '~~/server/fixtures/mockDayPlans'
 import { buildGenerateDayPrompt } from '~~/server/prompts/generateDayPrompt'
 import { stripJsonMarkdown, validateDayPlans } from '~~/server/utils/validateDayPlans'
-import type { DayPlan } from '~~/types/npc'
+import type { DayPlan, GenerateDayMeta, GenerateDaySource } from '~~/types/npc'
 
 interface GenerateDayBody {
   day?: number
@@ -24,12 +24,42 @@ interface DeepSeekChatResponse {
   }>
 }
 
+interface GenerateResult {
+  dayPlans: DayPlan[]
+  meta: GenerateDayMeta
+}
+
 const EXPECTED_NPC_IDS = npcProfiles.map(npc => npc.id)
 const VALID_LOCATION_IDS = new Set(locations.map(loc => loc.id))
 const CACHE_DIR = join(process.cwd(), '.data', 'cache')
 
 function getCachePath(day: number): string {
   return join(CACHE_DIR, `day-${day}.json`)
+}
+
+function buildMeta(
+  source: GenerateDaySource,
+  promptChars: number,
+  durationMs: number,
+  attempts: number,
+): GenerateDayMeta {
+  return { source, promptChars, durationMs, attempts }
+}
+
+function sanitizeGenerationError(message: string, isDev: boolean): string {
+  if (isDev) {
+    return message
+  }
+
+  if (/sk-[a-zA-Z0-9]+/i.test(message) || /Bearer\s+/i.test(message)) {
+    return '日程生成失败，请稍后重试'
+  }
+
+  if (message.includes('DeepSeek API') || message.includes('请求失败')) {
+    return '日程生成失败，请稍后重试'
+  }
+
+  return message.length > 120 ? '日程生成失败，请稍后重试' : message
 }
 
 async function readCache(day: number): Promise<DayPlan[] | null> {
@@ -69,8 +99,8 @@ async function callDeepSeek(
   })
 
   if (!response.ok) {
-    const errorText = await response.text()
-    throw new Error(`DeepSeek API 请求失败 (${response.status}): ${errorText}`)
+    await response.text()
+    throw new Error(`DeepSeek API 请求失败 (${response.status})`)
   }
 
   const data = await response.json() as DeepSeekChatResponse
@@ -93,19 +123,25 @@ async function generateDayPlans(
   apiKey: string,
   model: string,
   day: number,
-): Promise<DayPlan[]> {
+): Promise<GenerateResult> {
   const { system, user } = buildGenerateDayPrompt(day, npcProfiles, locations)
+  const promptChars = system.length + user.length
   const messages: DeepSeekMessage[] = [
     { role: 'system', content: system },
     { role: 'user', content: user },
   ]
 
+  const startedAt = Date.now()
   let lastError = '未知错误'
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       const content = await callDeepSeek(apiKey, model, messages)
-      return parseDayPlansFromContent(content, day)
+      const dayPlans = parseDayPlansFromContent(content, day)
+      return {
+        dayPlans,
+        meta: buildMeta('api', promptChars, Date.now() - startedAt, attempt + 1),
+      }
     }
     catch (error) {
       lastError = error instanceof Error ? error.message : String(error)
@@ -127,30 +163,50 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<GenerateDayBody>(event).catch(() => ({}))
   const day = body.day ?? 1
   const refresh = query.refresh === '1' || query.refresh === 'true'
+  const debug = query.debug === '1' || query.debug === 'true'
+  const isDev = import.meta.dev
+
+  const respond = (result: GenerateResult) => {
+    if (debug && isDev) {
+      return { dayPlans: result.dayPlans, meta: result.meta }
+    }
+    return result.dayPlans
+  }
 
   if (!config.deepseekApiKey) {
-    return mockDayPlans
+    const { system, user } = buildGenerateDayPrompt(day, npcProfiles, locations)
+    return respond({
+      dayPlans: mockDayPlans,
+      meta: buildMeta('mock', system.length + user.length, 0, 0),
+    })
   }
 
   if (!refresh) {
     const cached = await readCache(day)
     if (cached) {
-      return cached
+      const { system, user } = buildGenerateDayPrompt(day, npcProfiles, locations)
+      return respond({
+        dayPlans: cached,
+        meta: buildMeta('cache', system.length + user.length, 0, 0),
+      })
     }
   }
 
-  const dayPlans = await generateDayPlans(
-    config.deepseekApiKey,
-    config.deepseekModel,
-    day,
-  ).catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : String(error)
+  try {
+    const result = await generateDayPlans(
+      config.deepseekApiKey,
+      config.deepseekModel,
+      day,
+    )
+    await writeCache(day, result.dayPlans)
+    return respond(result)
+  }
+  catch (error: unknown) {
+    const rawMessage = error instanceof Error ? error.message : String(error)
+    const message = sanitizeGenerationError(rawMessage, isDev)
     throw createError({
       statusCode: 502,
       statusMessage: message,
     })
-  })
-
-  await writeCache(day, dayPlans)
-  return dayPlans
+  }
 })

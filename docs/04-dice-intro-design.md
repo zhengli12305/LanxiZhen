@@ -1,44 +1,53 @@
-# 骰子入场交互与过渡设计
+# 封面入场交互与过渡设计
 
-## 骰子组件（已实现，见 components/intro/）
+## 封面组件（已实现）
 
-`IntroDice.vue` 已经实现了完整的3D拖拽旋转逻辑，核心设计要点：
+主入口使用 [`IntroCoverScene.vue`](../components/intro/IntroCoverScene.vue) + [`lib/intro-three/`](../lib/intro-three/)，替代原 CSS `IntroDice`。
 
-- 六个面各自有一个局部坐标系下的法向量（比如正面是`[0,0,1]`），通过旋转矩阵实时计算当前旋转角度下哪个面最朝向用户（z分量最大），不依赖简单的角度取模判断
-- 松手后用 `nearestEquivalentAngle` 函数把当前累积的旋转角度吸附到目标角度的"最近同余值"，避免动画绕远路突兀跳变
-- 组件对外只暴露 `npcs` / `size` 两个props和一个 `select` emit，六个NPC的头像目前用色块+姓名首字占位，等美术素材到位后只需替换 `DiceFace.vue` 里的 `avatarColor` 计算逻辑为 `background-image`，不需要改动对外接口
+核心设计要点：
 
-**不要重新设计这个组件的旋转数学或props接口**，除非发现了实际的bug。
+- Three.js `BoxGeometry` 六面骰子，Canvas 烘焙 Kenney 贴图 + NPC 头像
+- 拖拽旋转与松手吸附逻辑在 `diceInteraction.ts`（移植自原 `IntroDice.vue` 的 `SNAP_ANGLES` / `nearestEquivalentAngle`）
+- 正面检测用材质法向量与相机方向的点积（`getFrontFaceMaterialIndex`）
+- 底部 menubar：实时显示朝前主角；槽2「角色一览」可快速转到指定面；槽3「关系速览」展示当前主角的关系网
+- 右上角：16:9 录制布局切换、暂停/播放（`lib/intro-three/layout.ts`）
+
+组件对外 API：
+
+```ts
+props: { npcs: NpcProfile[], disabled?: boolean }
+emit: { select: [npcId: string] }
+```
+
+**不要**在未确认 bug 的情况下重写面序映射或 props 接口。面序见 `lib/intro-three/dice.ts`。
 
 ## 数据预取时机
 
-在 `IntroDice` 组件挂载时（或者其父页面挂载时），就应该用 `useAsyncData` 发起对 `server/api/generate-day` 的请求，获取六个NPC当天的完整schedule。用户在骰子页面拖拽玩耍的这几秒钟，就是数据在后台准备的时间窗口。
+在 `index.vue` 挂载时（`onMounted` → `npcStore.fetchDayPlans`），就应该发起对 `server/api/generate-day` 的请求。用户在封面拖拽骰子的这几秒钟，就是数据在后台准备的时间窗口。
 
-**不要**等到用户点击"进入TA的一天"按钮之后才开始请求AI生成，那样会有明显的等待感。
+**不要**等到用户点击「进入!」之后才开始请求，那样会有明显的等待感。
 
 ## 选中后的过渡流程
 
-1. 用户点击"进入{name}的一天"按钮，骰子组件emit `select` 事件，携带选中的 `npcId`
-2. 检查预取的AI数据是否已经就绪：
-   - 已就绪 → 直接进入下一步
-   - 未就绪（用户手速太快）→ 展示 `LoadingScreen.vue`，文案要贴合场景，比如"{name}正在整理今天的活计…"，不要用无主题的通用转圈动画
-3. 播放过渡动画：骰子淡出并缩小，村庄地图淡入并放大，用Vue的 `<Transition>` 组件实现，过渡时长参考骰子吸附动画的节奏（约0.5-0.8秒），easing建议用 `cubic-bezier(0.22, 1, 0.36, 1)` 保持和骰子交互的动效语言一致
-4. 主界面聚焦选中的NPC
+1. 用户点击「进入!」，封面 emit `select`，携带选中的 `npcId`
+2. 检查预取的 AI 数据是否就绪：
+   - 已就绪 → 直接进入村庄
+   - 未就绪 → 展示 `LoadingScreen.vue`，文案贴合场景
+3. 播放过渡动画：封面淡出，村庄淡入（`index.vue` 的 `<Transition>`）
+4. 主界面聚焦选中的 NPC，详情面板自动打开
 
 ## 主界面初始状态规范（方案A：进场时其他NPC静止待命）
 
-这是明确拍板的方案，**不要**擅自改成"其他NPC进场时已经在活动"的方案（那是方案B，讨论过但因为实现复杂度更高、时间有限而放弃）。
-
 | 状态项 | 初始值 |
 |---|---|
-| 时间轴指针 | 当天起始时间（比如06:00），暂停状态 |
+| 时间轴指针 | 当天起始时间（06:00），暂停状态 |
 | 所有NPC位置 | 各自的 `homeLocationId`，静止 |
-| 聚焦对象 | 骰子选中的NPC id，写入 `useSimulationStore` |
-| 详情面板 | 自动展开，显示聚焦NPC的"今日预告"摘要（把当天schedule浓缩成一句话，不要直接甩一张流水账时间表） |
-| 播放按钮 | 明显可见，等待用户主动点击，不要自动播放 |
-| 骰子组件 | 已卸载，不保留在DOM里 |
-| 聚焦NPC的视觉提示 | 脚下给一个淡淡的高亮光圈/脉冲动画，帮助用户视线快速定位 |
+| 聚焦对象 | 骰子选中的 NPC id，写入 `useSimulationStore` |
+| 详情面板 | 自动展开，显示聚焦 NPC 的今日预告 + 此刻状态 |
+| 播放按钮 | 明显可见，等待用户主动点击 |
+| 封面场景 | 已卸载，`introSessionKey` 递增时完整 dispose WebGL |
+| 聚焦NPC的视觉提示 | 地图地点 halo + NPC 脉冲边框 |
 
-## app.vue 的职责
+## 页面级状态
 
-`app.vue`（或者一个页面级根组件）需要维护一个 `hasEntered` 布尔状态，决定渲染骰子视图还是村庄视图，两者切换配合上面第3步的过渡动画。骰子组件的 `select` 事件处理函数里，需要把选中的 `npcId` 写入 `useSimulationStore`，然后再把 `hasEntered` 置为 `true`。
+`app/pages/index.vue` 维护 `hasEntered` / `isEntering`，决定渲染封面还是村庄。`select` 处理函数写入 `useSimulationStore.setFocus` 后进入村庄流程。

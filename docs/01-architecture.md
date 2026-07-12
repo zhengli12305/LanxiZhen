@@ -11,7 +11,7 @@
 - **不要在客户端直接调用AI API**，API key必须留在服务端
 - Prompt要求模型只输出JSON，不要markdown代码块；服务端拿到结果后做一次 `JSON.parse` 校验，格式不对时做一次重试兜底
 - 生成结果建议做本地缓存（比如落一份JSON文件），避免每次刷新页面都重新调用AI浪费token
-- **预取时机**：不要等用户点击"进入某人的一天"才发起请求。应该在骰子入场页面（`IntroDice` 挂载时）就用 `useAsyncData` 发起请求，用户玩骰子的这几秒钟里数据大概率已经在路上或已经返回
+- **预取时机**：不要等用户点击"进入某人的一天"才发起请求。应该在封面入场页（`IntroCoverScene` 挂载时，见 `app/pages/index.vue`）就发起请求，用户玩骰子的这几秒钟里数据大概率已经在路上或已经返回
 
 ## 第二层：Pinia 状态层
 
@@ -25,9 +25,10 @@
 
 ## 第三层：渲染层组件
 
-- `VillageMap.vue`：地图容器，根据每个NPC的当前坐标定位精灵，用CSS `transform: translate` + `transition` 做移动动画，不需要canvas
-- `TimelineControl.vue`：底部时间滑块，播放/暂停/倍速控制
-- `NpcDetailPanel.vue`：点击NPC后展开的面板，展示当天完整时间线和内心独白日志
+- `IntroCoverScene.vue` + `lib/intro-three/`：Three.js 封面（极光、星场、骰子），`useCoverScene` 管理 WebGL 生命周期；仅客户端挂载（`<ClientOnly>`）
+- `VillageMap.vue`：地图容器，根据每个NPC的当前坐标定位精灵，用CSS `transform: translate` + `transition` 做移动动画；同地点多人显示 💬 标记
+- `TimelineControl.vue`：底部时间滑块，播放/暂停/倍速控制，精彩时刻快捷跳转
+- `NpcDetailPanel.vue`：点击NPC后展开的面板，展示「此刻」、关系速览、当天完整时间线（当前时刻高亮）与内心独白
 
 ## 第四层：用户交互（反馈闭环）
 
@@ -40,7 +41,7 @@ Nuxt服务端路由 (调用AI生成当日计划)
         ↓
 Pinia状态层 (时间轴 + NPC状态管理)
         ↓
-渲染层组件 (地图 + 时间轴 + 详情面板)
+渲染层组件 (封面 + 地图 + 时间轴 + 详情面板)
         ↓
 用户交互 (拖动时间轴、点击NPC)
         ↻ 反馈驱动状态层重新渲染

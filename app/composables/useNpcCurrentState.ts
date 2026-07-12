@@ -1,4 +1,4 @@
-import { parseTime } from '~~/utils/time'
+import { findCurrentEvent, findNextEvent } from '~~/utils/schedule'
 import type { NpcProfile, NpcRuntimeState, ScheduleEvent } from '~~/types/npc'
 
 const FALLBACK_ACTION = '待命中'
@@ -58,31 +58,6 @@ function buildFallbackState(profile: NpcProfile): NpcRuntimeState {
     currentAction: FALLBACK_ACTION,
     isMoving: false,
   }
-}
-
-function findCurrentEvent(
-  schedule: ScheduleEvent[],
-  currentMinutes: number,
-): ScheduleEvent | undefined {
-  let currentEvent: ScheduleEvent | undefined
-
-  for (const event of schedule) {
-    if (parseTime(event.time) <= currentMinutes) {
-      currentEvent = event
-    }
-    else {
-      break
-    }
-  }
-
-  return currentEvent
-}
-
-function findNextEvent(
-  schedule: ScheduleEvent[],
-  currentMinutes: number,
-): ScheduleEvent | undefined {
-  return schedule.find(event => parseTime(event.time) > currentMinutes)
 }
 
 function computeRuntimeState(

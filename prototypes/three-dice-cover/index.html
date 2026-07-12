@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>溪桥镇 · Cover Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=ZCOOL+KuaiLe&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app" data-mode="fullscreen">
+      <div id="viewport" class="viewport">
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <header class="overlay overlay--hero">
+        <p class="overlay__tagline">一款关系驱动的 NPC 社会仿真</p>
+        <h1 class="overlay__title">溪桥镇</h1>
+      </header>
+
+      <div class="overlay overlay--controls">
+        <button type="button" id="btn-ratio" class="ctrl-btn" title="切换布局">
+          16:9
+        </button>
+        <button type="button" id="btn-pause" class="ctrl-btn" title="暂停/播放">
+          暂停
+        </button>
+      </div>
+
+      <nav class="overlay overlay--menubar" aria-label="主菜单">
+        <div class="menubar">
+          <button type="button" class="menubar__slot menubar__slot--active">
+            <span class="menubar__slot-icon" aria-hidden="true">🎲</span>
+            <span class="menubar__slot-text">
+              <span class="menubar__slot-name">转动骰子</span>
+              <span class="menubar__slot-role">选择今日主角</span>
+            </span>
+          </button>
+          <button type="button" class="menubar__slot menubar__slot--locked" disabled aria-label="未解锁">
+            <span class="menubar__lock" aria-hidden="true">🔒</span>
+          </button>
+          <button type="button" class="menubar__slot menubar__slot--locked" disabled aria-label="未解锁">
+            <span class="menubar__lock" aria-hidden="true">🔒</span>
+          </button>
+          <button type="button" class="menubar__cta">进入!</button>
+        </div>
+      </nav>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

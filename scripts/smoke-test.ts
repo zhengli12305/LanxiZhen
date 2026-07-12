@@ -1,8 +1,11 @@
 import { locations } from '../data/locations'
 import { npcProfiles } from '../data/npcProfiles'
+import { highlightMoments } from '../data/highlightMoments'
 import { mockDayPlans } from '../server/fixtures/mockDayPlans'
 import { buildGenerateDayPrompt } from '../server/prompts/generateDayPrompt'
 import { stripJsonMarkdown, validateDayPlans } from '../server/utils/validateDayPlans'
+import { findCurrentEventIndex } from '../utils/schedule'
+import { parseTime } from '../utils/time'
 
 const EXPECTED_NPC_IDS = npcProfiles.map(npc => npc.id)
 const VALID_LOCATION_IDS = new Set(locations.map(loc => loc.id))
@@ -76,12 +79,32 @@ function testMockContentHasRelationshipTension(): void {
   console.log('✓ mock 日程内容符合关系张力验收标准')
 }
 
+function testFindCurrentEventIndex(): void {
+  const schedule = mockDayPlans.find(plan => plan.npcId === 'xiaoman')!.schedule
+  assert(findCurrentEventIndex(schedule, parseTime('09:00')) === 0, '09:00 应命中第 1 条')
+  assert(findCurrentEventIndex(schedule, parseTime('09:30')) === 1, '09:30 应命中第 2 条')
+  assert(findCurrentEventIndex(schedule, parseTime('10:00')) === 1, '10:00 仍应命中第 2 条')
+  console.log('✓ findCurrentEventIndex 按时间正确命中')
+}
+
+function testHighlightMomentsInRange(): void {
+  const start = parseTime('06:00')
+  const end = parseTime('22:00')
+  for (const moment of highlightMoments) {
+    const minutes = parseTime(moment.time)
+    assert(minutes >= start && minutes <= end, `${moment.label} 时间应在日内范围`)
+  }
+  console.log('✓ highlightMoments 时间均在合法范围内')
+}
+
 function main(): void {
   testStripJsonMarkdown()
   testValidatorAcceptsMockPlans()
   testValidatorRejectsInvalidLocation()
   testPromptContainsRelationshipConstraints()
   testMockContentHasRelationshipTension()
+  testFindCurrentEventIndex()
+  testHighlightMomentsInRange()
   console.log('\n全部 smoke test 通过')
 }
 

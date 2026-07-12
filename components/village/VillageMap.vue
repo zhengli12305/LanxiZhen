@@ -47,7 +47,16 @@
           />
 
           <span class="location-marker__pin" aria-hidden="true" />
-          <span class="location-marker__label">{{ loc.name }}</span>
+          <span class="location-marker__label">
+            {{ loc.name }}
+            <span
+              v-if="getCoPresenceCount(loc.id) >= 2"
+              class="location-marker__co-badge"
+              :title="getCoPresenceTitle(loc.id)"
+            >
+              💬{{ getCoPresenceCount(loc.id) }}
+            </span>
+          </span>
         </div>
 
         <NpcSprite
@@ -74,6 +83,7 @@ import { buildingPresets } from '~~/data/kenneyAssets'
 import { getLocationById, locations } from '~~/data/locations'
 import { decorTiles, groundTiles, gridToPixel, MAP_TILE_SCALE } from '~~/data/villageMapLayout'
 import { getNpcIsMoving, useAllNpcCurrentStates, useNpcMovementWatcher } from '~~/app/composables/useNpcCurrentState'
+import { getCoLocationOffset, groupNpcsByLocation } from '~~/utils/coPresence'
 
 const mapScale = MAP_TILE_SCALE
 
@@ -142,12 +152,31 @@ function getState(npcId: string) {
   }
 }
 
+const locationGroups = computed(() => groupNpcsByLocation(runtimeStates.value))
+
+function getCoPresenceCount(locationId: string): number {
+  return locationGroups.value.get(locationId)?.length ?? 0
+}
+
+function getCoPresenceTitle(locationId: string): string {
+  const ids = locationGroups.value.get(locationId) ?? []
+  const names = ids.map(id => npcStore.getProfile(id)?.name ?? id)
+  return `同场：${names.join('、')}`
+}
+
 function getPosition(npcId: string): { x: number, y: number } {
   const state = getState(npcId)
   const location = getLocationById(state.currentLocationId)
+  const baseX = location?.x ?? 380
+  const baseY = location?.y ?? 240
+
+  const coLocated = locationGroups.value.get(state.currentLocationId) ?? []
+  const index = coLocated.indexOf(npcId)
+  const offset = getCoLocationOffset(index, coLocated.length)
+
   return {
-    x: location?.x ?? 380,
-    y: location?.y ?? 240,
+    x: baseX + offset.dx,
+    y: baseY + offset.dy,
   }
 }
 
@@ -262,5 +291,11 @@ function getNpcZIndex(npcId: string): number {
 .location-marker--focused .location-marker__label {
   border-color: #e8a33d;
   background: rgba(255, 248, 230, 1);
+}
+
+.location-marker__co-badge {
+  margin-left: 4px;
+  font-size: 9px;
+  white-space: nowrap;
 }
 </style>

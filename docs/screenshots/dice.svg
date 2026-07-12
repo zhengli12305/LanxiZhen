@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#1a2418"/>
+  <rect x="40" y="40" width="720" height="420" rx="8" fill="#2e3b2e" stroke="#e8a33d" stroke-width="2"/>
+  <text x="400" y="120" text-anchor="middle" fill="#f2e9d8" font-family="serif" font-size="32">�eG</text>
+  <text x="400" y="160" text-anchor="middle" fill="#e8a33d" font-family="serif" font-size="16">3D �P	� � Kenney � b</text>
+  <rect x="300" y="200" width="200" height="200" rx="12" fill="#3d5a3a" stroke="#5c3d1e" stroke-width="3"/>
+  <text x="400" y="310" text-anchor="middle" fill="#f2e9d8" font-size="14">Dice Screenshot</text>
+  <text x="400" y="460" text-anchor="middle" fill="rgba(242,233,216,0.5)" font-size="12">�b:�E*�: npm run dev *ְPu</text>
+</svg>
