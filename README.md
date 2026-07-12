@@ -20,7 +20,7 @@
 
 <video src="docs/videos/demo.mp4" controls width="100%"></video>
 
-[下载演示视频](docs/videos/demo.mp4)
+> 以上为 README 预览用压缩版（约 1.3MB）。完整交互请访问 [Live Demo](https://lanxizhen.vercel.app)。
 
 ## 项目亮点（简历可用）
 
